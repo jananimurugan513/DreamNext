@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Internships</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f5;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .internship-card {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .internship-card h3 {
+      margin: 0;
+      color: #0078d4;
+    }
+    .internship-card p {
+      margin: 0.5rem 0;
+    }
+    .internship-card button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .edit-btn {
+      background-color: #ffc107;
+      color: #333;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    #editForm {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-top: 2rem;
+      display: none;
+    }
+    #editForm input, #editForm textarea {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #editForm button {
+      margin-top: 10px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>My Internships</h2>
+  <div id="internshipList"></div>
+
+  <form id="editForm">
+    <h3>Edit Internship</h3>
+    <input type="text" id="editTitle" required />
+    <input type="text" id="editCompany" required />
+    <input type="text" id="editLocation" required />
+    <input type="text" id="editDuration" required />
+    <input type="text" id="editStipend" />
+    <input type="text" id="editSkills" required />
+    <textarea id="editDescription" rows="4" required></textarea>
+    <input type="email" id="editEmail" required />
+    <button type="submit">Update Internship</button>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+      let internships = JSON.parse(localStorage.getItem("internships")) || [];
+      const internshipList = document.getElementById("internshipList");
+      const editForm = document.getElementById("editForm");
+
+      let editIndex = null;
+
+      function renderInternships() {
+        internshipList.innerHTML = "";
+
+        if (!activeUser || !activeUser.email) {
+          internshipList.innerHTML = "<p style='text-align:center;'>No active user found.</p>";
+          return;
+        }
+
+        const myInternships = internships.filter(intern =>
+          intern.postedBy === "recruiter" && intern.contact === activeUser.email
+        );
+
+        if (myInternships.length === 0) {
+          internshipList.innerHTML = "<p style='text-align:center;'>You haven't posted any internships yet.</p>";
+        } else {
+          myInternships.forEach((intern) => {
+            const card = document.createElement("div");
+            card.className = "internship-card";
+            card.innerHTML = `
+              <h3>${intern.title}</h3>
+              <p><strong>Company:</strong> ${intern.company}</p>
+              <p><strong>Location:</strong> ${intern.location}</p>
+              <p><strong>Duration:</strong> ${intern.duration}</p>
+              <p><strong>Stipend:</strong> ${intern.stipend}</p>
+              <p><strong>Skills:</strong> ${intern.skills}</p>
+              <p><strong>Description:</strong> ${intern.description}</p>
+              <p><strong>Contact:</strong> ${intern.contact}</p>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            `;
+
+            card.querySelector(".edit-btn").addEventListener("click", () => {
+              editIndex = internships.findIndex(i =>
+                i.title === intern.title &&
+                i.company === intern.company &&
+                i.contact === intern.contact
+              );
+              document.getElementById("editTitle").value = intern.title;
+              document.getElementById("editCompany").value = intern.company;
+              document.getElementById("editLocation").value = intern.location;
+              document.getElementById("editDuration").value = intern.duration;
+              document.getElementById("editStipend").value = intern.stipend;
+              document.getElementById("editSkills").value = intern.skills;
+              document.getElementById("editDescription").value = intern.description;
+              document.getElementById("editEmail").value = intern.contact;
+              editForm.style.display = "block";
+              window.scrollTo({ top: editForm.offsetTop, behavior: "smooth" });
+            });
+
+            card.querySelector(".delete-btn").addEventListener("click", () => {
+              internships = internships.filter(i =>
+                !(i.title === intern.title &&
+                  i.company === intern.company &&
+                  i.contact === intern.contact)
+              );
+              localStorage.setItem("internships", JSON.stringify(internships));
+              renderInternships();
+            });
+
+            internshipList.appendChild(card);
+          });
+        }
+      }
+
+      editForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (editIndex !== null) {
+          internships[editIndex] = {
+            title: document.getElementById("editTitle").value,
+            company: document.getElementById("editCompany").value,
+            location: document.getElementById("editLocation").value,
+            duration: document.getElementById("editDuration").value,
+            stipend: document.getElementById("editStipend").value,
+            skills: document.getElementById("editSkills").value,
+            description: document.getElementById("editDescription").value,
+            contact: document.getElementById("editEmail").value,
+            postedBy: "recruiter"
+          };
+          localStorage.setItem("internships", JSON.stringify(internships));
+          editForm.reset();
+          editForm.style.display = "none";
+          renderInternships();
+        }
+      });
+
+      renderInternships();
+    });
+  </script>
+</body>
+</html>
