@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #cd6da8, #8ec5fc);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 220px;
+      background: linear-gradient(135deg, #ffffff, #f3e5f5);
+      padding: 30px 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #6a1b9a;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #8e24aa;
+    }
+
+    .nav-link {
+      display: block;
+      margin: 25px 0;
+      padding: 12px 15px;
+      color: #6a1b9a;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background-color: #f3e5f5;
+      color: #8e24aa;
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      background-color: #8e24aa;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.shifted {
+      margin-left: 220px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .left-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .topbar-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .center-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .search-bar {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+      width: 60%;
+      height: 25px;
+    }
+
+    .right-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon {
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .dashboard-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    .welcome-message {
+      text-align: center;
+      color: white;
+      max-width: 700px;
+    }
+
+    .welcome-message h2 {
+      font-size: 42px;
+      margin-bottom: 10px;
+      margin-top: 0;
+    }
+
+    .welcome-message p {
+      font-size: 25px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(to right, #eae9eb, #f2f3f5);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+      z-index: 1002;
+    }
+
+    .bottom-icon {
+      font-size: 26px;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .bottom-icon:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" id="closeSidebar">❌</div>
+    <a href="profile.html" class="nav-link">My Profile</a>
+    
+    <a href="user job.html" class="nav-link">Jobs</a>
+    <a href="userappjobs.html" class="nav-link">Applied Jobs</a>
+    <a href="savedjobs.html" class="nav-link">Saved Jobs</a>
+    <a href="internships.html" class="nav-link">Internships</a>
+    <a href="about.html" class="nav-link">About Us</a>
+    <a href="login.html?logout=true" class="nav-link">Log Out</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="left-section">
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <label for="profileUpload">
+          <img src="default.png" alt="Profile" class="topbar-pic" id="previewImage" />
+        </label>
+        <input type="file" id="profileUpload" accept="image/*" style="display: none;" />
+      </div>
+      <div class="center-section">
+        <input type="text" class="search-bar" id="dashboardSearch" placeholder="Search your Job..." />
+      </div>
+      <div class="right-section">
+        <div class="icon" id="notificationIcon">&#128276;</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="dashboard-section">
+      <div class="welcome-message">
+        <h2 id="welcomeUser">Welcome to DreamNext!</h2>
+        <p>Explore new opportunities, find jobs, and take the next step toward your dream career—all in one place.</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const hamburger = document.getElementById("hamburger");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("mainContent");
+    const closeSidebar = document.getElementById("closeSidebar");
+
+    hamburger.addEventListener("click", () => {
+      sidebar.classList.add("show");
+      mainContent.classList.add("shifted");
+    });
+
+    closeSidebar.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      mainContent.classList.remove("shifted");
+    });
+
+    document.getElementById("profileUpload").addEventListener("change", function(event){
+      const file = event.target.files[0];
+      if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+          document.getElementById("previewImage").src = e.target.result;
+          localStorage.setItem("profilePhoto", e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    // Load profile photo from localStorage
+const photo = localStorage.getItem("profilePhoto");
+if (photo) {
+  document.getElementById("previewImage").src = photo;
+}
+
+// Load welcome name from localStorage
+const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+if (activeUser && activeUser.name) {
+  document.getElementById("welcomeUser").textContent = `Welcome to Career Connect, ${activeUser.name}!`;
+}
+
+// Notification click
+document.getElementById("notificationIcon").addEventListener("click", () => {
+  window.location.href = "notifications.html";
+});
+
+// Dashboard search
+document.getElementById("dashboardSearch").addEventListener("keypress", function(e){
+  if(e.key === "Enter"){
+    const query = e.target.value.trim();
+    if(query){
+      localStorage.setItem("searchQuery", query);
+      window.location.href = "searchuser.html";
+    }
+  }
+});
+
+// Logout alert
+if (window.location.search.includes("logout=true")) {
+  alert("✅ Logout successful!");
+}
+</script>
+</body>
+</html>
+
