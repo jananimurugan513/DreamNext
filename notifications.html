@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Notifications</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .note-card {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .note-card p {
+      margin: 0.5rem 0;
+    }
+    .note-card button {
+      margin-top: 0.5rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .note-card button:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <h2>My Notifications</h2>
+  <div id="noteList"></div>
+
+  <script>
+  const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+  const allNotes = JSON.parse(localStorage.getItem("notifications")) || [];
+  const noteList = document.getElementById("noteList");
+
+  function renderNotifications() {
+    noteList.innerHTML = "";
+
+    if (!activeUser || !activeUser.email) {
+      noteList.innerHTML = "<p style='text-align:center;'>No active user found.</p>";
+      return;
+    }
+
+    const userNotes = allNotes.filter(note => note.email === activeUser.email);
+
+    if (userNotes.length === 0) {
+      noteList.innerHTML = "<p style='text-align:center;'>No notifications yet.</p>";
+    } else {
+      userNotes.forEach((note) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+
+        const messageP = document.createElement("p");
+        messageP.textContent = note.message;
+
+        const dateP = document.createElement("p");
+        dateP.innerHTML = `<small>${note.date}</small>`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", () => {
+          deleteNotification(note.email, note.message, note.date);
+        });
+
+        card.appendChild(messageP);
+        card.appendChild(dateP);
+        card.appendChild(deleteBtn);
+        noteList.appendChild(card);
+      });
+    }
+  }
+
+  function deleteNotification(email, message, date) {
+    const updatedNotes = allNotes.filter(note =>
+      !(note.email === email && note.message === message && note.date === date)
+    );
+    localStorage.setItem("notifications", JSON.stringify(updatedNotes));
+    renderNotifications(); // reload content without full page reload
+  }
+
+  renderNotifications();
+</script>
+</body>
+</html>
