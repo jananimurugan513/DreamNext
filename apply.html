@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apply for Internship</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .form-container {
+      background: white;
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #0078d4;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #confirmation {
+      margin-top: 20px;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Apply for Internship</h2>
+    <form id="applicationForm">
+      <label>Your Name</label>
+      <input type="text" id="name" required />
+
+      <label>Your Email</label>
+      <input type="email" id="email" required />
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required />
+
+      <label>Education</label>
+      <input type="text" id="education" required />
+
+      <label>Skills</label>
+      <input type="text" id="skills" required />
+
+      <label>Preferred Location</label>
+      <input type="text" id="location" required />
+
+      <label>Upload Resume</label>
+      <input type="file" id="resume" accept=".pdf,.doc,.docx" required />
+
+      <button type="submit">Submit Application</button>
+    </form>
+    <div id="confirmation"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('applicationForm');
+    const confirmation = document.getElementById('confirmation');
+    const internship = JSON.parse(localStorage.getItem('selectedInternship'));
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const education = document.getElementById('education').value;
+      const skills = document.getElementById('skills').value;
+      const location = document.getElementById('location').value;
+      const resume = document.getElementById('resume').files[0];
+
+      if (!resume) {
+        alert("Please upload your resume.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const resumeBase64 = reader.result;
+
+        const applications = JSON.parse(localStorage.getItem('internApplications')) || [];
+        applications.push({
+          internshipTitle: internship?.title || "N/A",
+          name,
+          email,
+          phone,
+          education,
+          skills,
+          location,
+          resumeName: resume.name,
+          resumeData: resumeBase64,
+          submittedAt: new Date().toLocaleString()
+        });
+
+        localStorage.setItem('internApplications', JSON.stringify(applications));
+        confirmation.textContent = "Application submitted successfully!";
+        form.reset();
+      };
+      reader.readAsDataURL(resume);
+    });
+  </script>
+</body>
+</html>
