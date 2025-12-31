@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recruiter Internships</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #25b5f8;
+      padding: 20px;
+      text-align: center;
+      color: white;
+    }
+    .search-bar {
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 0 20px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .internship-card {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .internship-card h3 {
+      margin: 0;
+      color: #0078d4;
+    }
+    .internship-card p {
+      margin: 8px 0;
+    }
+    .apply-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 16px;
+      background-color: #25b5f8;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .apply-button:hover {
+      background-color: #199cd6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Internships</h1>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search by title or company..." />
+  </div>
+
+  <div id="internshipList"></div>
+
+  <script>
+    const list = document.getElementById('internshipList');
+    const searchInput = document.getElementById('searchInput');
+    const internships = JSON.parse(localStorage.getItem('internships')) || [];
+    const recruiterInternships = internships.filter(i => i.postedBy === "recruiter");
+
+    function renderInternships(data) {
+      list.innerHTML = '';
+      if (data.length === 0) {
+        list.innerHTML = "<p style='text-align:center;'>No matching internships found.</p>";
+        return;
+      }
+      data.forEach((internship) => {
+        const card = document.createElement('div');
+        card.className = 'internship-card';
+        card.innerHTML = `
+          <h3>${internship.title}</h3>
+          <p><strong>Company:</strong> ${internship.company}</p>
+          <p><strong>Location:</strong> ${internship.location}</p>
+          <p><strong>Duration:</strong> ${internship.duration}</p>
+          <p><strong>Stipend:</strong> ${internship.stipend || 'Not specified'}</p>
+          <p><strong>Skills:</strong> ${internship.skills}</p>
+          <p><strong>Description:</strong> ${internship.description}</p>
+          <p><strong>Contact:</strong> <a href="mailto:${internship.contact}">${internship.contact}</a></p>
+          <a class="apply-button" href="apply.html">Apply Now</a>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    renderInternships(recruiterInternships);
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = recruiterInternships.filter(i =>
+        i.title.toLowerCase().includes(query) ||
+        i.company.toLowerCase().includes(query)
+      );
+      renderInternships(filtered);
+    });
+  </script>
+</body>
+</html>
