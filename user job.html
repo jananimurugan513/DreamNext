@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Posted Jobs</title>
+  <style>
+   select {
+  display: block;
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  width: 500vw;
+  
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef3f8;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    select {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      max-width: 300px;
+      width: 100%;
+    }
+    .job-section {
+      margin-top: 2rem;
+    }
+    .job-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .job-card h3 {
+      margin: 0 0 0.5rem;
+    }
+    .job-card p {
+      margin: 0.3rem 0;
+    }
+    .actions {
+      margin-top: 1rem;
+    }
+    .actions button {
+      padding: 0.6rem 1rem;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .save-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .apply-btn {
+      background-color: #00c853;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2> Jobs</h2>
+
+  <select id="fieldFilter">
+    <option value="">-- Search by Fields --</option>
+    <option value="Engineering">Engineering</option>
+    <option value="Arts">Arts</option>
+    <option value="Science">Science</option>
+    <option value="Commerce">Commerce</option>
+    <option value="Management">Management</option>
+    <option value="Law">Law</option>
+    <option value="Medicine">Medicine</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <div id="jobContainer"></div>
+
+  <script>
+    const jobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+
+    function saveJob(job) {
+      const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
+      savedJobs.push(job);
+      localStorage.setItem("savedJobs", JSON.stringify(savedJobs));
+      alert("✅ Job saved!");
+    }
+
+    function applyJob(job) {
+      localStorage.setItem("selectedJob", JSON.stringify(job));
+      window.location.href = "userapplyform.html";
+    }
+
+    function renderJobs(filterField = "") {
+      const groupedJobs = jobs.reduce((acc, job) => {
+        const field = job.field || "Other";
+        if (!acc[field]) acc[field] = [];
+        acc[field].push(job);
+        return acc;
+      }, {});
+
+      const container = document.getElementById("jobContainer");
+      container.innerHTML = "";
+
+      Object.keys(groupedJobs).forEach(field => {
+        if (filterField && field !== filterField) return;
+
+        const section = document.createElement("div");
+        section.className = "job-section";
+        section.innerHTML = `<h3>Jobs in ${field}</h3>`;
+
+        groupedJobs[field].forEach(job => {
+          const card = document.createElement("div");
+          card.className = "job-card";
+          card.innerHTML = `
+            <h3>${job.title}</h3>
+            <p><strong>Company:</strong> ${job.company}</p>
+            <p><strong>Location:</strong> ${job.location}</p>
+            <p><strong>Work Type:</strong> ${job.workType}</p>
+            <p><strong>Posted Date:</strong> ${job.postedDate}</p>
+            <p><strong>Status:</strong> ${job.status}</p>
+            <p><strong>Easy Apply:</strong> ${job.easyApply ? "Enabled" : "Disabled"}</p>
+            <p>${job.description}</p>
+            <div class="actions">
+              <button class="save-btn">Save</button>
+              <button class="apply-btn">Apply</button>
+            </div>
+          `;
+
+          card.querySelector(".save-btn").addEventListener("click", () => saveJob(job));
+          card.querySelector(".apply-btn").addEventListener("click", () => applyJob(job));
+
+          section.appendChild(card);
+        });
+
+        container.appendChild(section);
+      });
+    }
+
+    document.getElementById("fieldFilter").addEventListener("change", (e) => {
+      renderJobs(e.target.value);
+    });
+
+    renderJobs(); // Initial render
+  </script>
+</body>
+</html>
