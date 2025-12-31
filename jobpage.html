@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a Job</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef3f8;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Post a Job</h2>
+    <form id="jobForm">
+      <label>Job Title</label>
+      <input type="text" name="title" required />
+
+      <label>Company Name</label>
+      <input type="text" name="company" required />
+
+      <label>Location</label>
+      <input type="text" name="location" required />
+
+      <label>Work Type</label>
+      <select name="workType">
+        <option value="Remote">Remote</option>
+        <option value="Hybrid">Hybrid</option>
+        <option value="On-site">On-site</option>
+      </select>
+      <label>Field</label>
+<select name="field" required>
+  <option value="">-- Select Field --</option>
+  <option value="Engineering">Engineering</option>
+  <option value="Arts">Arts</option>
+  <option value="Science">Science</option>
+  <option value="Commerce">Commerce</option>
+  <option value="Management">Management</option>
+  <option value="Law">Law</option>
+  <option value="Medicine">Medicine</option>
+  <option value="Other">Other</option>
+</select>
+
+      <label>Posted Date</label>
+      <input type="date" name="postedDate" required />
+
+      <label>Status</label>
+      <select name="status">
+        <option value="Actively reviewing applicants">Actively reviewing applicants</option>
+        <option value="Be an early applicant">Be an early applicant</option>
+      </select>
+
+      <label>Easy Apply Enabled</label>
+      <input type="checkbox" name="easyApply" />
+
+      <label>Job Description</label>
+      <textarea name="description" required></textarea>
+
+      <button type="submit">Post Job</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('jobForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      data.easyApply = formData.has('easyApply');
+
+      try {
+        const response = await fetch('http://localhost:3000/api/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to post job: ${errorText}`);
+        }
+
+        const result = await response.json();
+        alert(result.message || 'Job posted successfully!');
+        window.location.href = 'recruiter myjobs.html'; // ✅ Redirect to job list
+      } catch (error) {
+        alert('Error: ' + error.message);
+        console.error('Job post error:', error);
+      }
+    });
+    document.getElementById('jobForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+  data.easyApply = formData.has('easyApply');
+
+  const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+  postedJobs.push(data);
+  localStorage.setItem("postedJobs", JSON.stringify(postedJobs));
+
+  alert("✅ Job posted successfully!");
+  window.location.href = "reqruiter-dashboard.html";
+});
+  </script>
+</body>
+</html>
