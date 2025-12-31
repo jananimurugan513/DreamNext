@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Career Connect - About Us</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #d4ecff, #ffffff);
+      color: #333;
+    }
+
+    .about-section {
+      padding: 100px 40px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .about-section h1 {
+      font-size: 56px;
+      color: #0077cc;
+      margin-bottom: 30px;
+    }
+
+    .intro {
+      font-size: 22px;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 0 auto 70px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+
+    .service-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      padding: 40px 30px;
+      transition: transform 0.3s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .service-card h2 {
+      font-size: 28px;
+      color: #0077cc;
+      margin-bottom: 15px;
+    }
+
+    .service-card p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .about-section {
+        padding: 60px 20px;
+      }
+
+      .about-section h1 {
+        font-size: 40px;
+      }
+
+      .intro {
+        font-size: 18px;
+      }
+
+      .service-card h2 {
+        font-size: 24px;
+      }
+
+      .service-card p {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="about-section">
+    <div class="container">
+      <h1>About Us</h1>
+      <p class="intro">
+        Welcome to career connect,your gateway to a bright future!
+        Career Connect is a dynamic platform for career growth, education, and professional networking.
+        we Bring together Students,professionals, and employers on one dynamic platform.
+       
+      </p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <h2>HRHub</h2>
+          <p>Discover new job opportunities, connect with companies, and build your professional brand.</p>
+        </div>
+        <div class="service-card">
+          <h2>Professional</h2>
+          <p>Career Connect is a one-stop career platform helping individuals enhance skills, explore opportunities, and achieve their professional goals.
+</p>
+        </div>
+        <div class="service-card">
+          <h2>MentorLink</h2>
+          <p>Career Connect empowers you with learning, networking, and job support to shape a rewarding and confident future.
+</p>
+        </div>
+        <div class="service-card">
+          <h2>CampusConnect</h2>
+          <p>Bridge the gap between students and industry with curated opportunities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
