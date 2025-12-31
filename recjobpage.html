@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Posted Jobs</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fc;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .job-card {
+      background: #fff;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .job-card h3 {
+      margin: 0 0 0.5rem;
+    }
+    .job-card p {
+      margin: 0.3rem 0;
+    }
+    .job-card button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .job-card button:hover {
+      background-color: #b02a37;
+    }
+  </style>
+</head>
+<body>
+  <h2>My Jobs</h2>
+  <div id="jobsContainer"></div>
+
+  <script>
+    function loadJobs() {
+      const jobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+      const container = document.getElementById("jobsContainer");
+      container.innerHTML = "";
+
+      if (jobs.length === 0) {
+        container.innerHTML = "<p>No jobs posted yet.</p>";
+        return;
+      }
+
+      jobs.forEach((job, index) => {
+        const jobCard = document.createElement("div");
+        jobCard.className = "job-card";
+        jobCard.innerHTML = `
+          <h3>${job.title}</h3>
+          <p><strong>Company:</strong> ${job.company}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Work Type:</strong> ${job.workType}</p>
+          <p><strong>Posted Date:</strong> ${job.postedDate}</p>
+          <p><strong>Status:</strong> ${job.status}</p>
+          <p><strong>Easy Apply:</strong> ${job.easyApply ? "Enabled" : "Disabled"}</p>
+          <p><strong>Description:</strong> ${job.description}</p>
+          <button onclick="deleteJob(${index})">Delete</button>
+        `;
+        container.appendChild(jobCard);
+      });
+    }
+
+    function deleteJob(index) {
+      const jobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+      jobs.splice(index, 1);
+      localStorage.setItem("postedJobs", JSON.stringify(jobs));
+      loadJobs();
+    }
+
+    window.onload = loadJobs;
+  </script>
+</body>
+</html>
