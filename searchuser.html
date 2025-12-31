@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Search Results</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .job-card {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .job-card h3 {
+      margin: 0 0 10px;
+    }
+    .job-card p {
+      margin: 5px 0;
+    }
+    .actions {
+      margin-top: 15px;
+    }
+    .actions button {
+      padding: 10px 16px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .save-btn {
+      background-color: #007bff;
+      color: white;
+    }
+    .apply-btn {
+      background-color: #00c853;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>Search Results</h2>
+  <div id="jobList"></div>
+
+  <script>
+    const jobList = document.getElementById("jobList");
+    const postedJobs = JSON.parse(localStorage.getItem("postedJobs")) || [];
+    const query = localStorage.getItem("searchQuery")?.toLowerCase() || "";
+
+    function saveJob(job) {
+      const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
+      savedJobs.push(job);
+      localStorage.setItem("savedJobs", JSON.stringify(savedJobs));
+      alert("✅ Job saved!");
+    }
+
+    function applyJob(job) {
+      localStorage.setItem("selectedJob", JSON.stringify(job));
+      window.location.href = "userapplyform.html";
+    }
+
+    const filteredJobs = postedJobs.filter(job =>
+      job.title.toLowerCase().includes(query) ||
+      job.company.toLowerCase().includes(query) ||
+      job.location.toLowerCase().includes(query) ||
+      job.description.toLowerCase().includes(query)
+    );
+
+    if (filteredJobs.length === 0) {
+      jobList.innerHTML = "<p style='text-align:center;'>No matching jobs found.</p>";
+    } else {
+      filteredJobs.forEach(job => {
+        const card = document.createElement("div");
+        card.className = "job-card";
+        card.innerHTML = `
+          <h3>${job.title}</h3>
+          <p><strong>Company:</strong> ${job.company}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>Work Type:</strong> ${job.workType}</p>
+          <p><strong>Status:</strong> ${job.status}</p>
+          <p><strong>Description:</strong> ${job.description}</p>
+          <div class="actions">
+            <button class="save-btn">Save</button>
+            <button class="apply-btn">Apply</button>
+          </div>
+        `;
+
+        card.querySelector(".save-btn").addEventListener("click", () => saveJob(job));
+        card.querySelector(".apply-btn").addEventListener("click", () => applyJob(job));
+
+        jobList.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
