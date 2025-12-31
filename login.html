@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e33ba5, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+    .login-container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 50px;
+      border-radius: 16px;
+      width: 400px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 2px solid white;
+    }
+    .login-container h2 {
+      margin-bottom: 30px;
+      font-size: 36px;
+    }
+    input {
+      width: 100%;
+      padding: 16px;
+      margin: 15px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 18px;
+    }
+    input::placeholder {
+      color: #ddd;
+    }
+    .forgot {
+      display: block;
+      text-align: right;
+      font-size: 1em;
+      margin-bottom: 25px;
+      color: #aeefff;
+      text-decoration: none;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 25px;
+      background: linear-gradient(to right, #00c853, #64dd17);
+      color: white;
+      font-size: 18px;
+    }
+    .signup-prompt {
+      font-size: 1.1em;
+      color: #eee;
+    }
+    .signup-prompt a {
+      color: #aeefff;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+    .signup-prompt a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 480px) {
+      .login-container {
+        width: 90%;
+        padding: 30px;
+      }
+      .login-container h2 {
+        font-size: 28px;
+      }
+      input {
+        font-size: 16px;
+        padding: 14px;
+      }
+      .login-btn {
+        font-size: 16px;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter your email" autocomplete="off" />
+    <input type="password" id="password" placeholder="Enter your password" autocomplete="off" />
+    <a href="#" class="forgot">Forgot password?</a>
+    <button class="login-btn">Login</button>
+    <div class="signup-prompt">
+      Don’t have an account? <a href="register.html">Signup</a>
+    </div>
+  </div>
+
+  <script>
+    document.querySelector('.login-btn').addEventListener('click', function () {
+      const email = document.getElementById("username").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("⚠️ Please enter both email and password.");
+        return;
+      }
+
+      // Simulated frontend-only login check
+      alert(`✅ Welcome, ${email}! `);
+
+      // Example redirect (replace with actual logic if needed)
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
