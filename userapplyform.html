@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef3f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background-color: #00c853;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #009624;
+    }
+    .status {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: green;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>User Profile & Resume Upload</h2>
+    <div id="jobInfo"></div>
+    <form id="profileForm">
+      <label>Name</label>
+      <input type="text" name="name" required />
+
+      <label>Email</label>
+      <input type="email" name="email" required />
+
+      <label>Location</label>
+      <input type="text" name="location" required />
+
+      <label>Contact Number</label>
+      <input type="tel" name="mobile" required />
+
+      <label>Education</label>
+      <input type="text" name="education" required />
+
+      <label>Skills</label>
+      <textarea name="skills" rows="3" required></textarea>
+
+      <label>Upload Resume (PDF only)</label>
+      <input type="file" id="resumeUpload" accept=".pdf" required />
+
+      <button type="submit">Submit</button>
+      <div class="status" id="statusMsg"></div>
+    </form>
+  </div>
+
+  <script>
+    const selectedJob = JSON.parse(localStorage.getItem("selectedJob"));
+    if (selectedJob) {
+      document.getElementById("jobInfo").innerHTML = `<p><strong>Applying for:</strong> ${selectedJob.title}</p>`;
+    }
+
+    document.getElementById("profileForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const resumeFile = document.getElementById("resumeUpload").files[0];
+
+      if (!resumeFile || resumeFile.type !== "application/pdf") {
+        alert("Please upload a valid PDF resume.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const applicant = {
+          name: formData.get("name"),
+          email: formData.get("email"),
+          location: formData.get("location"),
+          mobile: formData.get("mobile"),
+          education: formData.get("education"),
+          skills: formData.get("skills"),
+          resume: event.target.result,
+          appliedDate: new Date().toLocaleDateString(),
+          jobTitle: selectedJob.title,
+          status: "Pending"
+        };
+
+        const applicants = JSON.parse(localStorage.getItem("applicants")) || [];
+        applicants.push(applicant);
+        localStorage.setItem("applicants", JSON.stringify(applicants));
+        localStorage.setItem("activeUser", JSON.stringify(applicant));
+
+        const notifications = JSON.parse(localStorage.getItem("recruiterNotifications")) || [];
+        notifications.push({
+          message: `📩 You have 1 new applicant for "${selectedJob.title}"`,
+          timestamp: new Date().toLocaleString(),
+          read: false
+        });
+        localStorage.setItem("recruiterNotifications", JSON.stringify(notifications));
+
+        document.getElementById("statusMsg").textContent = "✅ Application submitted successfully!";
+        window.location.href = "dashboard.html";
+      };
+
+      reader.readAsDataURL(resumeFile);
+    });
+  </script>
+</body>
+</html>
