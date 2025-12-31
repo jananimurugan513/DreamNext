@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #d4ecff, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-container {
+      display: flex;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 1000px;
+    }
+
+    .left-panel {
+      flex: 1;
+      background: #4ad8e5;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      cursor: pointer;
+      border: 3px solid #fff;
+    }
+
+    h2 {
+      color: #0073b1;
+      margin-bottom: 20px;
+    }
+
+    .right-panel {
+      flex: 2;
+      padding: 40px;
+    }
+
+    .info-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 20px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #0073b1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #0288d1;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <label for="profileUpload">
+        <img src="default.png" alt="Default Profile" class="profile-pic" id="previewImage" />
+      </label>
+      <input type="file" id="profileUpload" accept="image/*" />
+      <h2 id="profileName">Your Name</h2>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="info-group">
+        <label for="fullName">Name</label>
+        <input type="text" id="fullName" placeholder="Enter your name" />
+      </div>
+
+      <div class="info-group">
+        <label for="companyName">Company Name</label>
+        <input type="text" id="companyName" placeholder="Enter your company name" />
+      </div>
+
+      <div class="info-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" />
+      </div>
+
+      <div class="info-group">
+        <label for="companyLocation">Company Location</label>
+        <input type="text" id="companyLocation" placeholder="Enter your company location" />
+      </div>
+
+      <div class="info-group">
+        <label for="contact">Contact</label>
+        <input type="text" id="contact" placeholder="Enter your contact" />
+      </div>
+
+      <div class="info-group">
+        <label for="website">Company Website</label>
+        <input type="text" id="website" placeholder="Enter your company website" />
+      </div>
+
+      <div class="info-group">
+        <label for="about">About</label>
+        <textarea id="about" rows="4" placeholder="Write something about yourself..."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" onclick="enableEditing()">Edit Profile</button>
+        <button class="btn" onclick="removePhoto()">Remove Photo</button>
+        <button class="btn" onclick="saveProfile()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultPhoto = "default.png";
+    const savedProfile = JSON.parse(localStorage.getItem("userProfile"));
+    const savedPhoto = localStorage.getItem("profilePhoto");
+
+    if (savedProfile) {
+      document.getElementById("fullName").value = savedProfile.fullName || "";
+      document.getElementById("companyName").value = savedProfile.companyName || "";
+      document.getElementById("email").value = savedProfile.email || "";
+      document.getElementById("companyLocation").value = savedProfile.companyLocation || "";
+      document.getElementById("contact").value = savedProfile.contact || "";
+      document.getElementById("website").value = savedProfile.website || "";
+      document.getElementById("about").value = savedProfile.about || "";
+      document.getElementById("profileName").textContent = savedProfile.fullName || "Your Name";
+    }
+
+    document.getElementById("previewImage").src = savedPhoto || defaultPhoto;
+
+    const inputs = document.querySelectorAll("input:not([type='file']), textarea");
+    inputs.forEach(input => input.setAttribute("disabled", true));
+
+    function enableEditing() {
+      inputs.forEach(input => input.removeAttribute("disabled"));
+    }
+
+    document.getElementById("profileUpload").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("previewImage").src = e.target.result;
+          localStorage.setItem("profilePhoto", e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function saveProfile() {
+      const profileData = getProfileData();
+      localStorage.setItem("userProfile", JSON.stringify(profileData));
+      document.getElementById("profileName").textContent = profileData.fullName || "Your Name";
+      alert("✅ Profile saved successfully!");
+      window.location.href = "dashboard.html";
+    }
+
+    function removePhoto() {
+      localStorage.removeItem("profilePhoto");
+      document.getElementById("previewImage").src = defaultPhoto;
+      alert("🖼️ Profile photo removed!");
+    }
+
+    function getProfileData() {
+      return {
+        fullName: document.getElementById("fullName").value,
+        companyName: document.getElementById("companyName").value,
+        email: document.getElementById("email").value,
+        companyLocation: document.getElementById("companyLocation").value,
+        contact: document.getElementById("contact").value,
+        website: document.getElementById("website").value,
+        about: document.getElementById("about").value
+      };
+    }
+  </script>
+</body>
+</html>
