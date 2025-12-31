@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post Internship</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #0078d4;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #confirmation {
+      margin-top: 15px;
+      text-align: center;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Post Internship</h2>
+    <form id="internshipForm">
+      <label>Title</label>
+      <input type="text" id="title" required />
+
+      <label>Company</label>
+      <input type="text" id="company" required />
+
+      <label>Location</label>
+      <input type="text" id="location" required />
+
+      <label>Duration</label>
+      <input type="text" id="duration" required />
+
+      <label>Stipend</label>
+      <input type="text" id="stipend" required />
+
+      <label>Skills Required</label>
+      <input type="text" id="skills" required />
+
+      <label>Description</label>
+      <textarea id="description" rows="4" required></textarea>
+
+      <button type="submit">Post Internship</button>
+    </form>
+    <div id="confirmation"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('internshipForm');
+    const confirmation = document.getElementById('confirmation');
+    const activeUser = JSON.parse(localStorage.getItem("activeUser"));
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const internship = {
+        title: document.getElementById('title').value,
+        company: document.getElementById('company').value,
+        location: document.getElementById('location').value,
+        duration: document.getElementById('duration').value,
+        stipend: document.getElementById('stipend').value,
+        skills: document.getElementById('skills').value,
+        description: document.getElementById('description').value,
+        contact: activeUser?.email || "unknown@domain.com",
+        postedAt: new Date().toLocaleString(),
+        postedBy: "recruiter"
+      };
+
+      const internships = JSON.parse(localStorage.getItem('internships')) || [];
+      internships.push(internship);
+      localStorage.setItem('internships', JSON.stringify(internships));
+
+      confirmation.textContent = "Internship posted successfully!";
+      form.reset();
+    });
+  </script>
+</body>
+</html>
