@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Applicants</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .applicant-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .applicant-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .applicant-card p {
+      margin: 5px 0;
+    }
+
+    .actions {
+      margin-top: 15px;
+    }
+
+    .actions button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .shortlist {
+      background-color: #00c853;
+      color: white;
+    }
+
+    .reject {
+      background-color: #d50000;
+      color: white;
+    }
+
+    .status {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .resume-link {
+      color: #007bff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Applicants for Your Jobs</h2>
+  <div id="applicantsContainer"></div>
+
+  <script>
+  const applicantsContainer = document.getElementById("applicantsContainer");
+  let applicants = JSON.parse(localStorage.getItem("applicants")) || [];
+
+  function renderApplicants() {
+    applicantsContainer.innerHTML = "";
+
+    if (applicants.length === 0) {
+      applicantsContainer.innerHTML = "<p style='text-align:center;'>No applicants yet.</p>";
+      return;
+    }
+
+    applicants.forEach((applicant, index) => {
+      const card = document.createElement("div");
+      card.className = "applicant-card";
+
+      const resumeLink = applicant.resume
+        ? `<a href="${applicant.resume}" target="_blank" class="resume-link">View Resume</a>`
+        : "N/A";
+
+      card.innerHTML = `
+        <h3>${applicant.name}</h3>
+        <p><strong>Email:</strong> ${applicant.email}</p>
+        <p><strong>Location:</strong> ${applicant.location || "N/A"}</p>
+        <p><strong>Contact:</strong> ${applicant.mobile || "N/A"}</p>
+        <p><strong>Education:</strong> ${applicant.education || "N/A"}</p>
+        <p><strong>Skills:</strong> ${applicant.skills || "N/A"}</p>
+        <p><strong>Applied for:</strong> ${applicant.jobTitle || "N/A"}</p>
+        <p><strong>Resume:</strong> ${resumeLink}</p>
+        <div class="actions">
+          <button class="shortlist" onclick="updateStatus(${index}, 'Shortlisted')">Shortlist</button>
+          <button class="reject" onclick="updateStatus(${index}, 'Rejected')">Reject</button>
+          <button style="background-color:#757575; color:white;" onclick="deleteApplicant(${index})">Delete</button>
+        </div>
+        <div class="status">${applicant.status ? `Status: ${applicant.status}` : "Status: Pending"}</div>
+      `;
+
+      applicantsContainer.appendChild(card);
+    });
+  }
+
+  function updateStatus(index, status) {
+    applicants[index].status = status;
+    localStorage.setItem("applicants", JSON.stringify(applicants));
+
+    const notifications = JSON.parse(localStorage.getItem("notifications")) || [];
+    notifications.push({
+      email: applicants[index].email,
+      message: `Your application for "${applicants[index].jobTitle}" was ${status}.`,
+      date: new Date().toLocaleString()
+    });
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+
+    renderApplicants();
+  }
+
+  function deleteApplicant(index) {
+    const removed = applicants.splice(index, 1)[0];
+    localStorage.setItem("applicants", JSON.stringify(applicants));
+
+    const notifications = JSON.parse(localStorage.getItem("notifications")) || [];
+    notifications.push({
+      email: removed.email,
+      message: `Your application for "${removed.jobTitle}" was deleted by the recruiter.`,
+      date: new Date().toLocaleString()
+    });
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+
+    renderApplicants();
+  }
+
+  renderApplicants();
+</script>
+</body>
+</html>
