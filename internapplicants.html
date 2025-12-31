@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Internship Applicants</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #0078d4;
+    }
+    .applicant-card {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 700px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .applicant-card h3 {
+      margin: 0;
+      color: #25b5f8;
+    }
+    .applicant-card p {
+      margin: 6px 0;
+    }
+    .resume-link {
+      color: #0078d4;
+      text-decoration: underline;
+    }
+    .action-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .action-buttons button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .shortlist { background-color: #28a745; color: white; }
+    .reject { background-color: #dc3545; color: white; }
+    .delete { background-color: #6c757d; color: white; }
+    .status {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Internship Applicants</h1>
+  <div id="applicantList"></div>
+
+  <script>
+    const list = document.getElementById('applicantList');
+    let applications = JSON.parse(localStorage.getItem('internApplications')) || [];
+    let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+    const internships = JSON.parse(localStorage.getItem('internships')) || [];
+
+    function updateLocalStorage() {
+      localStorage.setItem('internApplications', JSON.stringify(applications));
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
+
+    function addNotification(email, message) {
+      const note = {
+        email,
+        message,
+        date: new Date().toLocaleString()
+      };
+      notifications.push(note);
+    }
+
+    function getUpdatedTitle(originalTitle) {
+      const match = internships.find(i => i.title === originalTitle || i.originalTitle === originalTitle);
+      return match ? match.title : originalTitle;
+    }
+
+    function renderApplicants() {
+      list.innerHTML = '';
+      if (applications.length === 0) {
+        list.innerHTML = "<p style='text-align:center;'>No applications submitted yet.</p>";
+        return;
+      }
+
+      applications.forEach((app, index) => {
+        const updatedTitle = getUpdatedTitle(app.internshipTitle);
+        const card = document.createElement('div');
+        card.className = 'applicant-card';
+        card.innerHTML = `
+          <h3>${updatedTitle}</h3>
+          <p><strong>Name:</strong> ${app.name}</p>
+          <p><strong>Email:</strong> ${app.email}</p>
+          <p><strong>Phone:</strong> ${app.phone}</p>
+          <p><strong>Education:</strong> ${app.education}</p>
+          <p><strong>Skills:</strong> ${app.skills}</p>
+          <p><strong>Preferred Location:</strong> ${app.location}</p>
+          ${app.resumeData ? `<p><strong>Resume:</strong> <a class="resume-link" href="${app.resumeData}" target="_blank">View Resume</a></p>` : `<p><strong>Resume:</strong> Not available</p>`}
+          <p><em>Submitted on ${app.submittedAt}</em></p>
+          <div class="action-buttons">
+            <button class="shortlist">Shortlist</button>
+            <button class="reject">Reject</button>
+            <button class="delete">Delete</button>
+          </div>
+          <div class="status">${app.status ? `Status: ${app.status}` : ''}</div>
+        `;
+
+        card.querySelector('.shortlist').addEventListener('click', () => {
+          applications[index].status = 'Shortlisted';
+          addNotification(app.email, `Your internship application for "${updatedTitle}" has been shortlisted.`);
+          updateLocalStorage();
+          renderApplicants();
+        });
+
+        card.querySelector('.reject').addEventListener('click', () => {
+          applications[index].status = 'Rejected';
+          addNotification(app.email, `Your internship application for "${updatedTitle}" has been rejected.`);
+          updateLocalStorage();
+          renderApplicants();
+        });
+
+        card.querySelector('.delete').addEventListener('click', () => {
+          if (confirm("Are you sure you want to delete this application?")) {
+            applications.splice(index, 1);
+            updateLocalStorage();
+            renderApplicants();
+          }
+        });
+
+        list.appendChild(card);
+      });
+    }
+
+    renderApplicants();
+  </script>
+</body>
+</html>
